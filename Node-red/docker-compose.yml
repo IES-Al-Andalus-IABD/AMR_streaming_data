@@ -9,6 +9,7 @@ version: "3.7"
 services:
   node-red:
     image: nodered/node-red:latest
+    container_name: node-red
     environment:
       - TZ=Europe/Amsterdam
     ports:
@@ -18,8 +19,26 @@ services:
     volumes:
       - node-red-data:/data
 
+  influxdb:
+      image: influxdb:latest
+      container_name: influxdb
+      ports:
+          - "8086:8086"
+      environment:
+          DOCKER_INFLUXDB_INIT_MODE: setup
+          DOCKER_INFLUXDB_INIT_USERNAME: somo
+          DOCKER_INFLUXDB_INIT_PASSWORD: 12345678
+          DOCKER_INFLUXDB_INIT_ORG: somorrostro
+          DOCKER_INFLUXDB_INIT_BUCKET: initial-bucket
+          DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: DlPs6QVmZvsA9D4ONsHooT7wFGk8U5uCsuxExTMS7-Vv9J_tv9XLuBNCjhk2K8Eo_Ff6V4sQ7EyQTE1V1Bre1Q==
+      networks:
+          - node-red-net
+      volumes:
+          - influxdb-data:/var/lib/influxdb
+
 volumes:
   node-red-data:
+  influxdb-data:
 
 networks:
   node-red-net:
