@@ -13,7 +13,7 @@ logging.basicConfig(
 logger = logging.getLogger("mir250-complete-producer")
 
 # Configuración del MIR250
-MIR250_IP = "192.168.250.34"  # Ajusta a la IP de tu robot
+MIR250_IP = "192.168.250.33"  # Ajusta a la IP de tu robot
 BASE_URL = f"http://{MIR250_IP}/api/v2.0.0"
 
 # Configuración de Kafka
@@ -28,7 +28,7 @@ previous_queue_id = None
 
 # Credenciales para la API del MIR250 (como en tu flujo Node-RED)
 AUTH_HEADERS = {
-    "Authorization": "Basic ZGlzdHJpYnV0b3I6NjJmMmYwZjFlZmYxMGQzMTUyYzk1ZjZmMDU5NjU3NmU0ODJiYjhlNDQ4MDY0MzNmNGNmOTI5NzkyODM0YjAxNA==",
+    "Authorization": "Basic VXNlcjowNGY4OTk2ZGE3NjNiN2E5NjliMTAyOGVlMzAwNzU2OWVhZjNhNjM1NDg2ZGRhYjIxMWQ1MTJjODViOWRmOGZi",
     "Content-Type": "application/json"
 }
 
