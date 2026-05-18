@@ -14,13 +14,13 @@ logging.basicConfig(
 logger = logging.getLogger("mir250-battery-consumer")
 
 # Configuración Kafka
-KAFKA_BROKERS = ["localhost:9092"]
+KAFKA_BROKERS = ["localhost:9093"]
 TOPIC_NAME = "mir250.battery"
 CONSUMER_GROUP = "battery-influxdb-group"
 
 # Configuración InfluxDB
 INFLUXDB_URL = "http://localhost:8086"
-INFLUXDB_TOKEN = "MMmNGESy_ZW-RoEjevg7lTLBYRSIzqx0UTl7VeQz9H7ssHAzHPFQ_fu_k2Bp4_InPPzEI6VGQ496Tn-xNGpsoA=="  # Solo para InfluxDB 2.x
+INFLUXDB_TOKEN = "-Kn9BQmY6lgwBTKpt1QZgbAOa4p8YrQ3YVGoKdH9G-U3g6Z5w97bJjVknHoZmTkqgN3uX428s1_x2MKYpU260g=="  # Solo para InfluxDB 2.x
 INFLUXDB_ORG = "somorrostro"      # Según tu configuración Node-RED
 INFLUXDB_BUCKET = "pruebas-MIR-kafka"   # Según tu configuración Node-RED
 MEASUREMENT = "Datos_MIR"         # Según tu configuración Node-RED
