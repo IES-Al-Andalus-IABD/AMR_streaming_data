@@ -3,4 +3,5 @@ MQTT/data/mosquitto.db
 MQTT/logs/mosquitto.log
 MQTT/config/mosquitto.conf
 MQTT/config/pwfile
+MQTT/log
 Kafka-TIG/grafana/data

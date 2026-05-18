@@ -68,8 +68,8 @@ services:
             DOCKER_INFLUXDB_INIT_MODE: setup
             DOCKER_INFLUXDB_INIT_USERNAME: admin
             DOCKER_INFLUXDB_INIT_PASSWORD: Admin.123
-            DOCKER_INFLUXDB_INIT_ORG: my-org
-            DOCKER_INFLUXDB_INIT_BUCKET: my-bucket
+            DOCKER_INFLUXDB_INIT_ORG: somorrostro
+            DOCKER_INFLUXDB_INIT_BUCKET: pruebas-MIR-kafka
             DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: -Kn9BQmY6lgwBTKpt1QZgbAOa4p8YrQ3YVGoKdH9G-U3g6Z5w97bJjVknHoZmTkqgN3uX428s1_x2MKYpU260g==
         networks:
             - db
