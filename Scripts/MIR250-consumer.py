@@ -15,7 +15,7 @@ logging.basicConfig(
 logger = logging.getLogger("mir250-complete-consumer")
 
 # Configuración Kafka
-KAFKA_BROKERS = ["localhost:9092"]
+KAFKA_BROKERS = ["localhost:9093"]
 TOPIC_BATTERY = "mir250.battery"
 TOPIC_MISSION_CURRENT = "mir250.mission.current"
 TOPIC_MISSION_COMPLETED = "mir250.mission.completed"
@@ -27,7 +27,7 @@ CONSUMER_GROUP_MISSION_COMPLETED = "mission-completed-influxdb-group"
 
 # Configuración InfluxDB
 INFLUXDB_URL = "http://localhost:8086"
-INFLUXDB_TOKEN = "MMmNGESy_ZW-RoEjevg7lTLBYRSIzqx0UTl7VeQz9H7ssHAzHPFQ_fu_k2Bp4_InPPzEI6VGQ496Tn-xNGpsoA=="
+INFLUXDB_TOKEN = "-Kn9BQmY6lgwBTKpt1QZgbAOa4p8YrQ3YVGoKdH9G-U3g6Z5w97bJjVknHoZmTkqgN3uX428s1_x2MKYpU260g=="
 INFLUXDB_ORG = "somorrostro"
 INFLUXDB_BUCKET = "pruebas-MIR-kafka"
 MEASUREMENT_BATTERY = "Datos_MIR"

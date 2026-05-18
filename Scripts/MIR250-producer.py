@@ -17,7 +17,7 @@ MIR250_IP = "192.168.250.33"  # Ajusta a la IP de tu robot
 BASE_URL = f"http://{MIR250_IP}/api/v2.0.0"
 
 # Configuración de Kafka
-KAFKA_BROKERS = ["localhost:9092"]  # Ajusta según tu configuración
+KAFKA_BROKERS = ["localhost:9093"]  # Ajusta según tu configuración
 TOPIC_BATTERY = "mir250.battery"
 TOPIC_MISSION_CURRENT = "mir250.mission.current"
 TOPIC_MISSION_COMPLETED = "mir250.mission.completed"
