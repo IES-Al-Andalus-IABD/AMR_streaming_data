@@ -1,47 +1,25 @@
 version: "3.6"
 services:
 
-    zookeeper:
-        image: bitnamilegacy/zookeeper:latest
-        container_name: zookeeper
+    mosquitto:
+        image: eclipse-mosquitto:latest
+        container_name: mosquitto
         ports:
-            - '2181:2181'
-        environment:
-            - ALLOW_ANONYMOUS_LOGIN=yes
+            - "1883:1883"
+        volumes:
+            - ./conf/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
         networks:
-            - kafka
+            - mqtt
 
-    kafka1:
-        #using the version 3.3.1 is because of an strange bug in one of the latest versions of kafka that comes from a hardware or OS incompatibility. you can try sometimes later with newest version to be sure that if there is no problem then back to the latest version.
-        image: bitnamilegacy/kafka:3.3.1
-        container_name: kafka1
+    mqttx-web:
+        image: emqx/mqttx-web
+        container_name: mqttx-web
         ports:
-            - '9093:9093'
-            - '9092:9092'
-        environment:
-            - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-            - ALLOW_PLAINTEXT_LISTENER=yes
-            - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
-            - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-            - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka1:9092,EXTERNAL://localhost:9093,
-            - KAFKA_INTER_BROKER_LISTENER_NAME=CLIENT
-            - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
+            - "80:80"
         depends_on:
-            - zookeeper
+            - mosquitto
         networks:
-            - kafka
-
-    kafdrop:
-        image: obsidiandynamics/kafdrop:latest
-        container_name: kafdrop
-        ports:
-            - 9000:9000
-        environment:
-            - KAFKA_BROKERCONNECT=kafka1:9092
-        depends_on:
-            - kafka1
-        networks:
-            - kafka
+            - mqtt
 
     ### DATABASE
     influxdb:
@@ -52,8 +30,7 @@ services:
             - "8086:8086"
             - "8090:8090"
         depends_on:
-            - zookeeper
-            - kafka1
+            - mosquitto
         environment:
             DOCKER_INFLUXDB_INIT_MODE: setup
             DOCKER_INFLUXDB_INIT_USERNAME: admin
@@ -73,12 +50,11 @@ services:
             # configuration in /telegraf/telegraf.conf
             influxdb_token: -Kn9BQmY6lgwBTKpt1QZgbAOa4p8YrQ3YVGoKdH9G-U3g6Z5w97bJjVknHoZmTkqgN3uX428s1_x2MKYpU260g==
         depends_on:
-            - zookeeper
             - influxdb
-            - kafka1
+            - mosquitto
         restart: unless-stopped
         networks:
-            - kafka
+            - mqtt
             - db
         volumes:
             - ./conf/telegraf/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
@@ -112,9 +88,9 @@ services:
 
     ### NETWORKS
 networks:
-    kafka:
-        # connection to kafka
-        name: kafka
+    mqtt:
+        # connection to mqtt
+        name: mqtt
         driver: bridge
     line:
         # connection to linesender
