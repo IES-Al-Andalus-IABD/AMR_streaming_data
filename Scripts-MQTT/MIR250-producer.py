@@ -3,7 +3,7 @@ import json
 import time
 import logging
 from datetime import datetime, timezone, timedelta
-from kafka import KafkaProducer
+import paho.mqtt.client as mqtt
 
 # Configuración básica de logging
 logging.basicConfig(
@@ -17,10 +17,11 @@ MIR250_IP = "192.168.250.33"  # Ajusta a la IP de tu robot
 BASE_URL = f"http://{MIR250_IP}/api/v2.0.0"
 
 # Configuración de Kafka
-KAFKA_BROKERS = ["localhost:9093"]  # Ajusta según tu configuración
-TOPIC_BATTERY = "mir250.battery"
-TOPIC_MISSION_CURRENT = "mir250.mission.current"
-TOPIC_MISSION_COMPLETED = "mir250.mission.completed"
+MQTT_BROKER = "localhost"  # Ajusta según tu configuración
+MQTT_PORT = 1883
+TOPIC_BATTERY = "mir250/battery"
+TOPIC_MISSION_CURRENT = "mir250/mission/current"
+TOPIC_MISSION_COMPLETED = "mir250/mission/completed"
 POLL_INTERVAL = 5  # Segundos entre consultas
 
 # Variables globales para seguimiento
@@ -31,20 +32,6 @@ AUTH_HEADERS = {
     "Authorization": "Basic VXNlcjowNGY4OTk2ZGE3NjNiN2E5NjliMTAyOGVlMzAwNzU2OWVhZjNhNjM1NDg2ZGRhYjIxMWQ1MTJjODViOWRmOGZi",
     "Content-Type": "application/json"
 }
-
-def create_kafka_producer():
-    """Crea y devuelve un productor Kafka configurado."""
-    logger.info(f"Conectando a brokers Kafka: {KAFKA_BROKERS}")
-    try:
-        producer = KafkaProducer(
-            bootstrap_servers=KAFKA_BROKERS,
-            value_serializer=lambda x: json.dumps(x).encode('utf-8')
-        )
-        logger.info("Productor Kafka creado exitosamente")
-        return producer
-    except Exception as e:
-        logger.error(f"Error al crear productor Kafka: {e}")
-        raise
 
 def get_status_data():
     """Consulta el estado general del robot MIR250."""
@@ -175,8 +162,8 @@ def find_mission_name(mission_guid, missions_list):
     mission = next((m for m in missions_list if m.get("guid") == mission_guid), None)
     return mission.get("name") if mission else None
 
-def send_to_kafka(producer, topic, data):
-    """Envía los datos al topic de Kafka especificado."""
+def send_to_mqtt(client, topic, data):
+    """Envía los datos al topic de MQTT especificado."""
     if not data:
         return
         
@@ -187,20 +174,20 @@ def send_to_kafka(producer, topic, data):
     message = data.copy()
     message["timestamp"] = local_time.isoformat()
     
-    # Enviar el mensaje a Kafka
+    # Enviar el mensaje a MQTT
     try:
-        producer.send(topic, value=message)
-        producer.flush()  # Asegurar que el mensaje se envía inmediatamente
-        logger.info(f"Datos enviados a Kafka topic '{topic}'")
+        client.publish(topic, json.dumps(message))
+        logger.info(f"Datos enviados a MQTT topic '{topic}'")
     except Exception as e:
-        logger.error(f"Error al enviar datos a Kafka topic '{topic}': {e}")
+        logger.error(f"Error al enviar datos a MQTT topic '{topic}': {e}")
 
 def main():
     """Función principal que ejecuta el ciclo de consulta y envío."""
     logger.info("Iniciando productor completo para MIR250")
     
-    # Crear el productor Kafka
-    producer = create_kafka_producer()
+    # Crear el productor MQTT
+    producer = mqtt.Client()
+    producer.connect(MQTT_BROKER, MQTT_PORT)
     
     try:
         # Bucle principal
@@ -210,7 +197,7 @@ def main():
             if status:
                 # Enviar datos de batería
                 battery_data = {"Battery": status.get("battery_percentage")}
-                send_to_kafka(producer, TOPIC_BATTERY, battery_data)
+                send_to_mqtt(producer, TOPIC_BATTERY, battery_data)
                 
                 # 2. Obtener la lista de misiones
                 missions_list = get_missions_list()
@@ -222,11 +209,11 @@ def main():
                     
                     # Enviar información sobre la misión actual
                     if mission_current:
-                        send_to_kafka(producer, TOPIC_MISSION_CURRENT, mission_current)
+                        send_to_mqtt(producer, TOPIC_MISSION_CURRENT, mission_current)
                     
                     # Enviar información sobre la misión completada
                     if mission_completed:
-                        send_to_kafka(producer, TOPIC_MISSION_COMPLETED, mission_completed)
+                        send_to_mqtt(producer, TOPIC_MISSION_COMPLETED, mission_completed)
             
             # Esperar antes de la siguiente consulta
             time.sleep(POLL_INTERVAL)
@@ -234,8 +221,8 @@ def main():
     except KeyboardInterrupt:
         logger.info("Deteniendo el productor")
     finally:
-        # Cerrar el productor de Kafka
-        producer.close()
+        # Cerrar el productor de MQTT
+        producer.disconnect()
         logger.info("Productor cerrado")
 
 if __name__ == "__main__":

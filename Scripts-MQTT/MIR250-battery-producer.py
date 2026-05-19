@@ -3,7 +3,7 @@ import json
 import time
 import logging
 from datetime import datetime, timezone, timedelta
-from kafka import KafkaProducer
+import paho.mqtt.client as mqtt
 
 # Configuración básica de logging
 logging.basicConfig(
@@ -16,9 +16,10 @@ logger = logging.getLogger("mir250-battery-producer")
 MIR250_IP = "192.168.250.33"  # Ajusta a la IP de tu robot
 BASE_URL = f"http://{MIR250_IP}/api/v2.0.0"
 
-# Configuración de Kafka
-KAFKA_BROKERS = ["localhost:9093"]  # Ajusta según tu configuración
-TOPIC_NAME = "mir250.battery"
+# Configuración de MQTT
+MQTT_BROKER = "localhost"  # Ajusta según tu configuración
+MQTT_PORT = 1883
+TOPIC_NAME = "mir250/battery"
 POLL_INTERVAL = 5  # Segundos entre consultas
 
 # Credenciales para la API del MIR250 (como en tu flujo Node-RED)
@@ -26,13 +27,6 @@ AUTH_HEADERS = {
     "Authorization": "Basic VXNlcjowNGY4OTk2ZGE3NjNiN2E5NjliMTAyOGVlMzAwNzU2OWVhZjNhNjM1NDg2ZGRhYjIxMWQ1MTJjODViOWRmOGZi",
     "Content-Type": "application/json"
 }
-
-def create_kafka_producer():
-    """Crea y devuelve un productor Kafka configurado."""
-    return KafkaProducer(
-        bootstrap_servers=KAFKA_BROKERS,
-        value_serializer=lambda x: json.dumps(x).encode('utf-8')
-    )
 
 def get_battery_percentage():
     """Consulta el porcentaje de batería del robot MIR250."""
@@ -59,8 +53,8 @@ def get_battery_percentage():
         logger.error(f"Error inesperado: {e}")
         return None
 
-def send_battery_data_to_kafka(producer, battery_percentage):
-    """Envía los datos de batería a Kafka."""
+def send_battery_data_to_mqtt(client, battery_percentage):
+    """Envía los datos de batería a MQTT."""
     if battery_percentage is None:
         return
         
@@ -74,30 +68,30 @@ def send_battery_data_to_kafka(producer, battery_percentage):
         "timestamp": local_time.isoformat()
     }
     
-    # Enviar el mensaje a Kafka
+    # Enviar el mensaje a MQTT
     try:
-        producer.send(TOPIC_NAME, value=message)
-        producer.flush()  # Asegurar que el mensaje se envía inmediatamente
-        logger.info(f"Datos enviados a Kafka: {message}")
+        client.publish(TOPIC_NAME, json.dumps(message))
+        logger.info(f"Datos enviados a MQTT: {message}")
     except Exception as e:
-        logger.error(f"Error al enviar datos a Kafka: {e}")
+        logger.error(f"Error al enviar datos a MQTT: {e}")
 
 def main():
     """Función principal que ejecuta el ciclo de consulta y envío."""
     logger.info("Iniciando productor de batería para MIR250")
     
-    # Crear el productor Kafka
-    producer = create_kafka_producer()
+    # Crear el productor MQTT
+    producer = mqtt.Client()
+    producer.connect(MQTT_BROKER, MQTT_PORT)
     
     try:
         # Bucle principal
         while True:
-            # Paso 1: Obtener el porcentaje de batería
             battery = get_battery_percentage()
+            # Paso 1: Obtener el porcentaje de batería
             
-            # Paso 2: Enviar los datos a Kafka (si hay datos válidos)
+            # Paso 2: Enviar los datos a MQTT (si hay datos válidos)
             if battery is not None:
-                send_battery_data_to_kafka(producer, battery)
+                send_battery_data_to_mqtt(producer, battery)
             
             # Esperar antes de la siguiente consulta
             time.sleep(POLL_INTERVAL)
@@ -105,8 +99,8 @@ def main():
     except KeyboardInterrupt:
         logger.info("Deteniendo el productor")
     finally:
-        # Cerrar el productor de Kafka
-        producer.close()
+        # Cerrar el productor de MQTT
+        producer.disconnect()
         logger.info("Productor cerrado")
 
 if __name__ == "__main__":
