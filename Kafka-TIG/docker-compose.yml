@@ -1,4 +1,3 @@
-version: "3.6"
 services:
 
     zookeeper:
@@ -94,6 +93,7 @@ services:
         volumes:
             - ./grafana/data:/var/lib/grafana
             - ./conf/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+            - ./conf/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
         networks:
             - grafana
             - db
