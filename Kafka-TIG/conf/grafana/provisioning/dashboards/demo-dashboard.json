@@ -93,7 +93,7 @@
             "type": "influxdb",
             "uid": "P5697886F9CA74929"
           },
-          "query": "from(bucket: \"my-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Datos_MIR\" and r._field == \"battery_percentage\")\n  |> last()",
+          "query": "from(bucket: \"pruebas-MIR-kafka\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Datos_MIR\" and r._field == \"Battery\")\n  |> last()",
           "refId": "A"
         }
       ],
@@ -150,7 +150,7 @@
             "type": "influxdb",
             "uid": "P5697886F9CA74929"
           },
-          "query": "from(bucket: \"my-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Misiones\" and r._field == \"mission_name\")\n  |> last()",
+          "query": "from(bucket: \"pruebas-MIR-kafka\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Misiones\" and r._field == \"mision_actual\")\n  |> last()",
           "refId": "A"
         }
       ],
@@ -208,7 +208,7 @@
             "type": "influxdb",
             "uid": "P5697886F9CA74929"
           },
-          "query": "from(bucket: \"my-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Misiones\" and r._field == \"status\" and r._value == \"completed\")\n  |> count()",
+          "query": "from(bucket: \"pruebas-MIR-kafka\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Misiones\" and r._field == \"state\")\n  |> count()",
           "refId": "A"
         }
       ],
@@ -308,7 +308,7 @@
             "type": "influxdb",
             "uid": "P5697886F9CA74929"
           },
-          "query": "from(bucket: \"my-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Datos_MIR\" and r._field == \"battery_percentage\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)",
+          "query": "from(bucket: \"pruebas-MIR-kafka\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Datos_MIR\" and r._field == \"Battery\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)",
           "refId": "A"
         }
       ],
@@ -393,7 +393,7 @@
             "type": "influxdb",
             "uid": "P5697886F9CA74929"
           },
-          "query": "from(bucket: \"my-bucket\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Misiones\")\n  |> group(columns: [\"mission_name\"])\n  |> count()",
+          "query": "from(bucket: \"pruebas-MIR-kafka\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"Misiones\" and r._field == \"nombre_mision\")\n  |> group(columns: [\"_value\"])\n  |> count()",
           "refId": "A"
         }
       ],
