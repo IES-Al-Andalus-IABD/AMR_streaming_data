@@ -1,9 +1,8 @@
 .vscode/settings.json
-MQTT-TIG/data/mosquitto.db
-MQTT-TIG/logs/mosquitto.log
-MQTT-TIG/config/mosquitto.conf
-MQTT-TIG/config/pwfile
-MQTT-TIG/log
-MQTT-TIG/grafana
-MQTT/log
+MQTT-TIG/conf/mosquitto/data/mosquitto.db
+MQTT-TIG/conf/mosquitto/config/mosquitto.conf
+MQTT-TIG/conf/mosquitto/config/pwfile
+MQTT-TIG/conf/mosquitto/log
+MQTT-TIG/conf/grafana
+MQTT-TIG/grafana/data
 Kafka-TIG/grafana/data

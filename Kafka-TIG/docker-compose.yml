@@ -44,7 +44,7 @@ services:
 
     ### DATABASE
     influxdb:
-        image: influxdb:2
+        image: influxdb:latest
         container_name: influxdb
         ports:
             - "8083:8083"
@@ -69,7 +69,6 @@ services:
         image: telegraf:latest
         container_name: telegraf
         environment:
-            # configuration in /telegraf/telegraf.conf
             influxdb_token: -Kn9BQmY6lgwBTKpt1QZgbAOa4p8YrQ3YVGoKdH9G-U3g6Z5w97bJjVknHoZmTkqgN3uX428s1_x2MKYpU260g==
         depends_on:
             - zookeeper
@@ -80,7 +79,7 @@ services:
             - kafka
             - db
         volumes:
-            - ./conf/telegraf/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
+            - ./conf/telegraf/telegraf.conf:/etc/telegraf/telegraf.conf:ro
 
     grafana:
         image: grafana/grafana
@@ -100,17 +99,7 @@ services:
             - line
         depends_on:
             - telegraf
-    # temperature-producer:
-    #     build:
-    #       context: ./DataSender
-    #       dockerfile: dockerfile
-    #     container_name: temperature-producer
-    #     depends_on:
-    #       - kafka1
-    #     networks:
-    #       - kafka
 
-    ### NETWORKS
 networks:
     kafka:
         # connection to kafka

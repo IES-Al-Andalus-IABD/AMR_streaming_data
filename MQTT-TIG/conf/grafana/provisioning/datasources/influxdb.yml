@@ -8,7 +8,7 @@ datasources:
     jsonData:
       version: Flux
       organization: somorrostro
-      defaultBucket: pruebas-MIR-kafka
+      defaultBucket: pruebas-MIR-mqtt
       tlsSkipVerify: true
     secureJsonData:
       token: -Kn9BQmY6lgwBTKpt1QZgbAOa4p8YrQ3YVGoKdH9G-U3g6Z5w97bJjVknHoZmTkqgN3uX428s1_x2MKYpU260g==
